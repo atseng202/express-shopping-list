@@ -24,10 +24,10 @@ router.post("/", middleware.checkItem, function (req, res, next) {
   // TODO: accepts req.body and adds the item to db, and returns it
   let { name, price } = req.body;
   db.items.push({name, price: Number(price)});
-  return res.json({
+  return res.status(201).json({
     added: {
       name,
-      price
+      price: Number(price)
     }
   });
 
