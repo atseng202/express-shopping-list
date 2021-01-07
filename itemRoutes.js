@@ -7,7 +7,7 @@ const express = require("express");
 const db = require("./fakeDb");
 const router = new express.Router();
 const middleware = require("./middleware");
-const { NotFoundError } = require("./expressError");
+const { NotFoundError, BadRequestError } = require("./expressError");
 
 /** GET /items: get list of all items */  
 router.get("/", function (req, res, next) {
@@ -23,7 +23,7 @@ router.get("/", function (req, res, next) {
 router.post("/", middleware.checkItem, function (req, res, next) {
   // TODO: accepts req.body and adds the item to db, and returns it
   let { name, price } = req.body;
-  
+  db.items.push({name, price: Number(price)});
   return res.json({
     added: {
       name,
@@ -37,7 +37,7 @@ router.post("/", middleware.checkItem, function (req, res, next) {
 router.get("/:name", function (req, res, next) {
 
   const foundItem = db.items.find( item => {
-    item.name === req.params.name;
+    return item.name === req.params.name;
   });
 
   if (!foundItem) {
@@ -53,17 +53,16 @@ router.get("/:name", function (req, res, next) {
  **/  
 router.patch("/:name", middleware.checkItem,  function (req, res, next) {
   let foundItemIdx = db.items.findIndex((item) => {
-    item.name === req.params.name;
+    return item.name === req.params.name;
   });
 
   if (foundItemIdx === -1) {
     throw new NotFoundError(`${req.params.name} does not exist.`);
   }
-
   const { name, price } = req.body; 
   db.items[foundItemIdx] = {
     name, 
-    price
+    price: Number(price)
   };
 
   return res.json({
@@ -75,12 +74,12 @@ router.patch("/:name", middleware.checkItem,  function (req, res, next) {
  * returns {message: "Deleted"}
  **/  
 router.delete("/:name", function (req, res, next) {
-  if (!req.body.name) {
+  if (!req.params.name) {
     throw new BadRequestError(`Must provide a name.`);
   }
 
   let foundItemIdx = db.items.findIndex((item) => {
-    item.name === req.params.name;
+    return item.name === req.params.name;
   });
 
   if (foundItemIdx === -1) {
@@ -89,7 +88,7 @@ router.delete("/:name", function (req, res, next) {
 
   db.items.splice(foundItemIdx, 1);
 
-  return { message: "Deleted" };
+  return res.json({ message: "Deleted" });
 });
 
 module.exports = router;

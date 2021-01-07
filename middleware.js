@@ -26,3 +26,5 @@ function checkItem(req, res, next) {
     return next();
   }
 }
+
+module.exports = {checkItem};
