@@ -13,6 +13,7 @@ function checkPrice(priceStr) {
 
   return true;
 }
+// have different function names, 
 
 /** Middleware function
  * Checks if the item POST has valid name and price
@@ -21,10 +22,8 @@ function checkItem(req, res, next) {
   if (!req.body.name) {
     throw new BadRequestError(`Must provide a name.`);
   }
-
-  if (checkPrice(req.body.price)) {
-    return next();
-  }
+  checkPrice(req.body.price);
+  return next();
 }
 
 module.exports = {checkItem};

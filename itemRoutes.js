@@ -21,7 +21,7 @@ router.get("/", function (req, res, next) {
  * { added: { name: "SOME_NAME", price: SOME_FLOAT_PRICE } }
  **/  
 router.post("/", middleware.checkItem, function (req, res, next) {
-  // TODO: accepts req.body and adds the item to db, and returns it
+  // scope of middleware - turningn string into numbers
   let { name, price } = req.body;
   db.items.push({name, price: Number(price)});
   return res.status(201).json({
@@ -43,8 +43,6 @@ router.get("/:name", function (req, res, next) {
   if (!foundItem) {
     throw new NotFoundError(`${req.params.name} does not exist.`);
   }
-
-  
   return res.json(foundItem);
 });
 
